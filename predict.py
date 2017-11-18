@@ -10,6 +10,15 @@ MONTH = 30
 
 # data from https://www.immihelp.com/visa-bulletin-tracker/
 # predict the advance time of next month give historical data
+class model:
+	def __init__(self):
+		self.model = linear_model.LinearRegression()
+
+	def train(self, X, y):
+		self.model.fit(X, y)
+
+	def predict(self, test_X):
+		return self.model.predict(test_X)
 
 def convert_wait_time_to_days(wait_time):
 	'''
@@ -30,6 +39,7 @@ def convert_wait_time_to_days(wait_time):
 
 	return days
 
+# read data
 df = pd.read_csv("pd_history.csv")
 df['eb2_wait_time'] = df['eb2_wait_time'].apply(lambda x: convert_wait_time_to_days(x))
 df['eb3_wait_time'] = df['eb3_wait_time'].apply(lambda x: convert_wait_time_to_days(x))
@@ -50,7 +60,6 @@ eb3_next_month_advance_days = eb3_current_month_advance_days[:-1]
 eb3_next_month_advance_days = [np.nan] + eb3_next_month_advance_days
 df['eb3_next_month_advance_days'] = eb3_next_month_advance_days
 
-print df
 # add month features
 month_names = ['Dec','Nov','Oct','Sep','Aug','Jul','Jun','May','Apr','Mar','Feb','Jan']
 for month_name in month_names:
@@ -59,27 +68,24 @@ for month_name in month_names:
 # drop the first/last month
 df = df.dropna(axis=0, how='any')
 
-# normalize the value
-for column in ['eb3_current_month_advance_days', 'eb3_wait_time', 'eb2_wait_time']:
-	df[column] = (df[column] - df[column].mean()) / (df[column].max() - df[column].min())
-
 # features used
 features = ['eb2_wait_time', 'eb3_wait_time', 'eb3_current_month_advance_days'] + month_names
 
 # train/test split
-split_months = 6
+split_months = 1
 train, test = df[split_months:], df[:split_months]
 train_X, test_X = train.as_matrix(features), test.as_matrix(features)
 train_y, test_y = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
 
 
-def predict(X, y, test_X, test_y):
-	reg = linear_model.LinearRegression()
-	reg.fit(X,y)
-	predictions = reg.predict(test_X)
-	print zip(predictions, test_y)
-	return predictions
 
-print df.values
-predictions = predict(train_X, train_y, test_X, test_y)
+model = model()
+model.train(train_X, train_y)
+
+predictions = model.predict(test_X)
 print r2_score(test_y, predictions)
+
+# single prediction, predict Jan's advance days, given Dec data
+single_predict = [1610, 1354, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+print zip(features, single_predict)
+print "Next month the priority date will advance by {0} days".format(str(model.predict([single_predict])))
