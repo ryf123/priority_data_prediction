@@ -1,18 +1,19 @@
-import math
 import numpy as np
 import re
 import pandas as pd
 from sklearn import linear_model
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, precision_recall_curve, average_precision_score
 
 YEAR = 365
 MONTH = 30
 
 # data from https://www.immihelp.com/visa-bulletin-tracker/
 # predict the advance time of next month give historical data
+
+
 class model:
-	def __init__(self):
-		self.model = linear_model.LinearRegression()
+	def __init__(self, model):
+		self.model = model
 
 	def train(self, X, y):
 		self.model.fit(X, y)
@@ -20,10 +21,13 @@ class model:
 	def predict(self, test_X):
 		return self.model.predict(test_X)
 
+
 def convert_wait_time_to_days(wait_time):
-	'''
-		conver year/month/day to days
-	'''
+	"""
+	convert year/month/day to days
+	:param wait_time: 
+	:return: 
+	"""
 	days = 0
 	m = re.search("(\d+) Yrs", wait_time)
 	if m:
@@ -38,6 +42,16 @@ def convert_wait_time_to_days(wait_time):
 		days += int(m.group(1))
 
 	return days
+
+
+def get_auc(test_y, predictions):
+	"""
+	Only used to get auc for binary classification problem
+	:param test_y: 
+	:param predictions: 
+	:return: 
+	"""
+	return average_precision_score(test_y, predictions)
 
 # read data
 df = pd.read_csv("pd_history.csv")
@@ -68,24 +82,33 @@ for month_name in month_names:
 # drop the first/last month
 df = df.dropna(axis=0, how='any')
 
+# add if next month advance column
+df['advance'] = df['eb3_next_month_advance_days'].apply(lambda x: x > 0)
 # features used
 features = ['eb2_wait_time', 'eb3_wait_time', 'eb3_current_month_advance_days'] + month_names
 
 # train/test split
-split_months = 1
-train, test = df[split_months:], df[:split_months]
+test_months = 3
+train, test = df[test_months:], df[:test_months]
 train_X, test_X = train.as_matrix(features), test.as_matrix(features)
-train_y, test_y = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
+train_y_days, test_y_days = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
+train_y_advance, test_y_advance = train['advance'], test['advance']
 
+predict_days_model = model(linear_model.LinearRegression())
+predict_days_model.train(train_X, train_y_days)
+predict_advance_model = model(linear_model.LogisticRegression())
+predict_advance_model.train(train_X, train_y_advance)
 
+predictions = predict_days_model.predict(test_X)
+print r2_score(test_y_days, predictions)
 
-model = model()
-model.train(train_X, train_y)
-
-predictions = model.predict(test_X)
-print r2_score(test_y, predictions)
+predictions = predict_advance_model.predict(test_X)
+print get_auc(test_y_advance, predictions)
 
 # single prediction, predict Jan's advance days, given Dec data
 single_predict = [1610, 1354, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
 print zip(features, single_predict)
-print "Next month the priority date will advance by {0} days".format(str(model.predict([single_predict])))
+
+status = "process" if predict_advance_model.predict([single_predict]) else "retrogress"
+days = str(predict_days_model.predict([single_predict])[0])
+print "Next month the priority date will {0} by {1} days".format(status, days)
