@@ -62,10 +62,10 @@ Jan-2013,12/08/2007,5 Yrs 23 Days,09/22/2006,6 Yrs 3 Mths 9 Days
 Dec-2012,10/22/2007,5 Yrs 1 Mth 8 Days,07/01/2006,6 Yrs 5 Mths
 Nov-2012,09/01/2007,5 Yrs 2 Mths,04/15/2006,6 Yrs 6 Mths 16 Days
 Oct-2012,07/15/2007,5 Yrs 2 Mths 15 Days,02/08/2006,6 Yrs 7 Mths 22 Days
-Sep-2012,07/15/2007,5 Yrs 2 Mths 15 Days,12/15/2005,6 Yrs 8 Mths 16 Days
-Aug-2012,07/15/2007,5 Yrs 2 Mths 15 Days,11/08/2005,6 Yrs 8 Mths 23 Days
-Jul-2012,07/15/2007,5 Yrs 2 Mths 15 Days,09/22/2005,6 Yrs 9 Mths 8 Days
-Jun-2012,07/15/2007,5 Yrs 2 Mths 15 Days,08/08/2005,6 Yrs 9 Mths 23 Days
+Sep-2012,08/15/2007,5 Yrs 15 Days,12/15/2005,6 Yrs 8 Mths 16 Days
+Aug-2012,08/15/2007,4 Yrs 11 Mths 15 Days,11/08/2005,6 Yrs 8 Mths 23 Days
+Jul-2012,08/15/2007,4 Yrs 10 Mths 15 Days,09/22/2005,6 Yrs 9 Mths 8 Days
+Jun-2012,08/15/2007,4 Yrs 9 Mths 15 Days,08/08/2005,6 Yrs 9 Mths 23 Days
 May-2012,08/15/2007,4 Yrs 8 Mths 15 Days,04/01/2005,7 Yrs 1 Mth
 Apr-2012,05/01/2010,1 Yr 11 Mths,03/01/2005,7 Yrs 1 Mth
 Mar-2012,03/01/2010,2 Yrs,01/01/2005,7 Yrs 2 Mths
@@ -83,3 +83,42 @@ Apr-2011,07/22/2006,4 Yrs 8 Mths 9 Days,03/01/2004,7 Yrs 1 Mth
 Mar-2011,07/08/2006,4 Yrs 7 Mths 20 Days,01/22/2004,7 Yrs 1 Mth 6 Days
 Feb-2011,07/01/2006,4 Yrs 7 Mths,01/01/2004,7 Yrs 1 Mth
 Jan-2011,06/22/2006,4 Yrs 6 Mths 9 Days,12/15/2003,7 Yrs 16 Days
+Dec-2010,06/08/2006,4 Yrs 5 Mths 22 Days,12/08/2003,6 Yrs 11 Mths 22 Days
+Nov-2010,06/01/2006,4 Yrs 5 Mths,11/22/2003,6 Yrs 11 Mths 9 Days
+Oct-2010,05/22/2006,4 Yrs 4 Mths 8 Days,11/08/2003,6 Yrs 10 Mths 22 Days
+Sep-2010,05/08/2006,4 Yrs 3 Mths 23 Days,10/22/2003,6 Yrs 10 Mths 9 Days
+Aug-2010,03/01/2006,4 Yrs 5 Mths,09/22/2003,6 Yrs 10 Mths 9 Days
+Jul-2010,11/22/2005,4 Yrs 7 Mths 8 Days,08/15/2003,6 Yrs 10 Mths 15 Days
+Jun-2010,11/22/2005,4 Yrs 6 Mths 9 Days,06/22/2003,6 Yrs 11 Mths 9 Days
+May-2010,09/22/2005,4 Yrs 7 Mths 8 Days,04/22/2003,7 Yrs 8 Days
+Apr-2010,08/22/2005,4 Yrs 7 Mths 9 Days,02/01/2003,7 Yrs 2 Mths
+Mar-2010,07/08/2005,4 Yrs 7 Mths 20 Days,12/15/2002,7 Yrs 2 Mths 13 Days
+Feb-2010,05/22/2005,4 Yrs 8 Mths 9 Days,09/22/2002,7 Yrs 4 Mths 9 Days
+Jan-2010,05/01/2005,4 Yrs 8 Mths,08/01/2002,7 Yrs 5 Mths
+Dec-2009,04/01/2005,4 Yrs 8 Mths,06/01/2002,7 Yrs 6 Mths
+Nov-2009,04/01/2005,4 Yrs 7 Mths,06/01/2002,7 Yrs 5 Mths
+Oct-2009,03/22/2005,4 Yrs 6 Mths 8 Days,02/22/2002,7 Yrs 7 Mths 8 Days
+Sep-2009,01/08/2005,4 Yrs 7 Mths 23 Days,03/01/2003,6 Yrs 6 Mth
+Aug-2009,10/01/2003,5 Yrs 10 Mths,03/01/2003,6 Yrs 5 Mth
+Jul-2009,01/01/2000,9 Yrs 6 Mths,03/01/2003,6 Yrs 4 Mth
+Jun-2009,02/15/2005,4 Yrs 3 Mths 16 Days,03/01/2003,6 Yrs 3 Mth
+May-2009,02/15/2005,4 Yrs 2 Mths 15 Days,03/01/2003,6 Yrs 2 Mth
+Apr-2009,02/15/2005,4 Yrs 1 Mth 16 Days,03/01/2003,6 Yrs 1 Mth
+Mar-2009,02/15/2005,4 Yrs 13 Days,10/22/2002,6 Yrs 4 Mths 6 Days
+Feb-2009,01/01/2005,4 Yrs 1 Mth,10/01/2002,6 Yrs 4 Mths
+Jan-2009,07/08/2004,4 Yrs 5 Mths 23 Days,06/01/2002,6 Yrs 7 Mths
+Dec-2008,06/01/2004,4 Yrs 6 Mths,02/01/2002,6 Yrs 10 Mths
+Nov-2008,06/01/2004,4 Yrs 5 Mths,02/01/2002,6 Yrs 9 Mths
+Oct-2008,04/01/2004,4 Yrs 6 Mths,10/01/2001,7 Yrs
+Sep-2008,08/01/2006,2 Yrs 1 Mth,03/22/2003,5 Yrs 5 Mths 9 Days
+Aug-2008,06/01/2006,2 Yrs 2 Mths,03/22/2003,5 Yrs 4 Mths 9 Days
+Jul-2008,04/01/2004,4 Yrs 3 Mths,03/22/2003,5 Yrs 3 Mths 9 Days
+Jun-2008,04/01/2004,4 Yrs 2 Mths,03/22/2003,5 Yrs 2 Mths 9 Days
+May-2008,01/01/2004,4 Yrs 4 Mths,03/22/2003,5 Yrs 1 Mth 8 Days
+Apr-2008,12/01/2003,4 Yrs 4 Mths,02/08/2003,5 Yrs 1 Mth 23 Days
+Mar-2008,12/01/2003,4 Yrs 3 Mths,12/01/2002,5 Yrs 3 Mths
+Feb-2008,01/01/2003,5 Yrs 1 Mth,11/15/2001,6 Yrs 2 Mths 16 Days
+Jan-2008,01/01/2003,5 Yrs,11/01/2001,6 Yrs 2 Mths
+Dec-2007,01/01/2003,4 Yrs 11 Mths,10/15/2001,6 Yrs 1 Mth 15 Days
+Nov-2007,01/01/2006,1 Yr 10 Mths,09/01/2001,6 Yrs 2 Mths
+Oct-2007,01/01/2006,1 Yr 9 Mths,09/01/2001,6 Yrs 1 Mth
