@@ -2,7 +2,8 @@ import numpy as np
 import re
 import pandas as pd
 from sklearn import linear_model
-from sklearn.metrics import r2_score, precision_recall_curve, average_precision_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import r2_score, average_precision_score
 
 YEAR = 365
 MONTH = 30
@@ -11,7 +12,7 @@ MONTH = 30
 # predict the advance time of next month give historical data
 
 
-class model:
+class Model:
 	def __init__(self, model):
 		self.model = model
 
@@ -35,7 +36,7 @@ def convert_wait_time_to_days(wait_time):
 
 	m = re.search("(\d+) Mths", wait_time)
 	if m:
-		days += MONTH * int(m.group(1)) 
+		days += MONTH * int(m.group(1))
 
 	m = re.search("(\d+) Days", wait_time)
 	if m:
@@ -88,22 +89,31 @@ df['advance'] = df['eb3_next_month_advance_days'].apply(lambda x: x > 0)
 features = ['eb2_wait_time', 'eb3_wait_time', 'eb3_current_month_advance_days'] + month_names
 
 # train/test split
-test_months = 3
-train, test = df[test_months:], df[:test_months]
-train_X, test_X = train.as_matrix(features), test.as_matrix(features)
-train_y_days, test_y_days = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
-train_y_advance, test_y_advance = train['advance'], test['advance']
+test_months = [12, 9, 6, 3, 1]
+for test_month in test_months:
+	print "test month:", test_month
+	train, test = df[test_month:], df[:test_month]
+	train_X, test_X = train.as_matrix(features), test.as_matrix(features)
+	train_y_days, test_y_days = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
+	train_y_advance, test_y_advance = train['advance'], test['advance']
 
-predict_days_model = model(linear_model.LinearRegression())
-predict_days_model.train(train_X, train_y_days)
-predict_advance_model = model(linear_model.LogisticRegression())
-predict_advance_model.train(train_X, train_y_advance)
+	# predict advance days using linear regression
+	predict_days_model = Model(linear_model.LinearRegression())
+	predict_days_model.train(train_X, train_y_days)
+	predictions = predict_days_model.predict(test_X)
+	print "linear regression r2 score:", r2_score(test_y_days, predictions)
 
-predictions = predict_days_model.predict(test_X)
-print r2_score(test_y_days, predictions)
+	# predict advance/retrogress using logistic regression
+	predict_advance_model = Model(linear_model.LogisticRegression())
+	predict_advance_model.train(train_X, train_y_advance)
+	predictions = predict_advance_model.predict(test_X)
+	print "logistic regression auc:", get_auc(test_y_advance, predictions)
 
-predictions = predict_advance_model.predict(test_X)
-print get_auc(test_y_advance, predictions)
+	# predict advance/retrogress using random forest
+	predict_advance_model = Model(RandomForestClassifier(n_estimators=10))
+	predict_advance_model.train(train_X, train_y_advance)
+	predictions = predict_advance_model.predict(test_X)
+	print "random forest auc:", get_auc(test_y_advance, predictions)
 
 # single prediction, predict Jan's advance days, given Dec data
 single_predict = [1610, 1354, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
