@@ -1,9 +1,9 @@
 import numpy as np
 import re
 import pandas as pd
-from sklearn import linear_model
+from sklearn import linear_model, ensemble
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import r2_score, average_precision_score
+from sklearn.metrics import r2_score, average_precision_score, mean_squared_error
 
 YEAR = 365  # use 365 days a year
 MONTH = 30  # use 30 days a month
@@ -50,6 +50,13 @@ def convert_wait_time(wait_time, month=True):
 	return days
 
 
+def one_hot_encoding(df, col_name, limit=30):
+	top = df[col_name].isin(df[col_name].value_counts().index[:limit])
+	df_backup = df
+	df.loc[~top, col_name] = "other" + col_name
+	return pd.get_dummies(df, columns=[col_name])
+
+
 def get_auc(test_y, predictions):
 	"""
 	Only used to get auc for binary classification problem
@@ -65,16 +72,19 @@ def main():
 	classification_map = {True: "process", False: "retrogress"}
 
 	# define feature
-	month_names = ['Dec', 'Nov', 'Oct', 'Sep', 'Aug', 'Jul', 'Jun', 'May', 'Apr', 'Mar', 'Feb', 'Jan']
+	# month_names = ['Dec', 'Nov', 'Oct', 'Sep', 'Aug', 'Jul', 'Jun', 'May', 'Apr', 'Mar', 'Feb', 'Jan']
 
 	# features used
-	features = ['eb2_wait_time', 'eb3_wait_time', 'eb3_current_month_advance_days']
-	features += month_names
+	features = ['eb2_wait_time', 'eb3_wait_time', 'eb3_current_month_advance_days', 'long_consecutive_advance_days']
 
 	# read data
 	df = pd.read_csv("pd_history.csv")
 	df['eb2_wait_time'] = df['eb2_wait_time'].apply(lambda x: convert_wait_time(x))
 	df['eb3_wait_time'] = df['eb3_wait_time'].apply(lambda x: convert_wait_time(x))
+
+	# encoding month
+	df['month'] = df['month'].apply(lambda  x: x.split('-')[0])
+	df = one_hot_encoding(df, 'month')
 
 	eb3_current_month_advance_days = []
 	eb3_wait_time = df['eb3_wait_time'].values
@@ -105,12 +115,13 @@ def main():
 			longest_days += eb3_next_month_advance_days
 	df['long_consecutive_advance_days'] = long_consecutive_advance_days
 
-	# add month features
-	for month_name in month_names:
-		df[month_name] = df['month'].apply(lambda x: month_name in x)
+	# remove unused features
+	unused_features = ['eb2_cut', 'eb3_cut']
+	for _ in unused_features:
+		df.pop(_)
 
 	# future month features, the first element is for the future month, get it before drop na
-	future_month_features = df[:1].as_matrix(features)
+	future_month_features = df[:1].dropna(axis=1)
 
 	# drop the first/last month
 	df = df.dropna(axis=0, how='any')
@@ -126,12 +137,13 @@ def main():
 	for test_month in test_months:
 		print "test month:", test_month
 		train, test = df[test_month:], df[:test_month]
-		train_X, test_X = train.as_matrix(features), test.as_matrix(features)
-		train_y_days, test_y_days = train['eb3_next_month_advance_days'], test['eb3_next_month_advance_days']
-		train_y_advance, test_y_advance = train['advance'], test['advance']
+		train_X, test_X = train, test
+		train_y_days, test_y_days = train_X.pop('eb3_next_month_advance_days'), test_X.pop('eb3_next_month_advance_days')
+		train_y_advance, test_y_advance = train_X.pop('advance'), test_X.pop('advance')
 
 		# predict advance days using linear regression
-		predict_days_model = Model(linear_model.LinearRegression())
+		# predict_days_model = Model(linear_model.LinearRegression())
+		predict_days_model = Model(ensemble.RandomForestRegressor())
 		predict_days_model.train(train_X, train_y_days)
 
 		# predict advance/retrogress using logistic regression
@@ -145,22 +157,24 @@ def main():
 		# get score if testing is greater than 3, else predict last few months' date
 		if test_month > 3:
 			predictions = predict_days_model.predict(test_X)
-			print "linear regression r2 score:", r2_score(test_y_days, predictions)
+			# print "linear regression r2 score:", r2_score(test_y_days, predictions)
+			print np.sqrt(mean_squared_error(test_y_days.values, predictions))
 			predictions = predict_advance_model.predict(test_X)
 			print "logistic regression auc:", get_auc(test_y_advance, predictions)
 			predictions = predict_advance_model.predict(test_X)
 			print "random forest auc:", get_auc(test_y_advance, predictions)
 		else:
-			for i, x in enumerate(test_X):
-				print zip(features, x)
-				status = predict_advance_model.predict([x])[0]
-				months = predict_days_model.predict([x])[0]
-				print "Next month the priority date will {0} by {1} days".format(classification_map[status], months * MONTH)
+			# for i, x in enumerate(test_X.iterrows()):
+				# print zip(train.columns.values, x)
+			status = predict_advance_model.predict(test_X)
+			months = predict_days_model.predict(test_X)
+			for i, month in enumerate(months):
+				print "Next month the priority date will {0} by {1} days".format(classification_map[status[i]], month * MONTH)
 				print "Actual {0} by {1} month.".format(classification_map[test_y_advance.values[i]], test_y_days.values[i])
 
 		# the future one month prediction
-		print zip(features, future_month_features[0])
-		status = predict_advance_model.predict(future_month_features)[0]
+		# print zip(train.columns.values, future_month_features[0])
+		status = predict_advance_model.predict(future_month_features.as_matrix())[0]
 		months = predict_days_model.predict(future_month_features)[0]
 		print "Next month the priority date will {0} by {1} days".format(classification_map[status], months * MONTH)
 
